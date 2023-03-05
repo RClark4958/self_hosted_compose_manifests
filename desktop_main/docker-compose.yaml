@@ -13,7 +13,7 @@ services:
             capabilities: [gpu]
 #    network_mode: docker_default
     network_mode: bridge
-#    hostname: MostHigh
+#    hostname: $HOST
     environment:
       - TZ=America/Denver
 #      - PLEX_CLAIM=claim
