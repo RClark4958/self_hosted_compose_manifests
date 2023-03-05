@@ -1,5 +1,3 @@
-# self_hosted_compose_manifests
-
-## purpose
+# Docker Compose at Home
 
 ##### collection of compose docs present on different machines in a home environment
