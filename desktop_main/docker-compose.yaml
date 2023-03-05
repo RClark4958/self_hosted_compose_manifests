@@ -1,0 +1,80 @@
+version: "2.7"
+services:
+  plex:
+    image: linuxserver/plex    
+    container_name: plex
+#    command: nvidia-smi
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: 1
+            capabilities: [gpu]
+#    network_mode: docker_default
+    network_mode: bridge
+#    hostname: MostHigh
+    environment:
+      - TZ=America/Denver
+#      - PLEX_CLAIM=claim
+#      - ADVERTISE_IP=http://192.168.1.2:32400/
+      - PUID=1000
+      - PGID=1000
+      - VERSION=latest
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      - /docker/plex/preroll/:/preroll
+      - /docker/plex/:/config
+      - /mnt/c/Users/$USER/Sync/movies:/movies
+      - /mnt/c/Users/$USER/Sync/shows:/tv
+      - /mnt/z/movies:/movies
+      - /mnt/z/shows:/tv
+      - /mnt/z/music:/music
+
+    restart: always
+    ports:
+      - 32400:32400/tcp
+      - 3005:3005/tcp
+      - 5353:5353/udp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+
+  terraria:
+    image: beardedio/terraria:vanilla-latest
+    ports:
+      - '7777:777'
+    restart: always
+    environment:
+      - world=first.wld
+    volumes:
+      - /docker/terraria/config:/config
+    tty: true
+    stdin_open: true
+
+ watchtower:
+   image: containrrr/watchtower
+   volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+   restart: unless-stopped
+
+  valheim: 
+    image: ghcr.io/lloesche/valheim-server
+    cap_add:
+      - sys_nice
+    volumes: 
+      - /home/$USER/valheim-server/config:/config
+      - /home/$USER/valheim-server/data:/opt/valheim
+    ports: 
+      - 2456:2456/udp
+      - 2457:2457/udp
+      - 9001:9001/tcp
+    env_file:
+      - /home/$USER/valheim-server/valheim.env
+    restart: always
+    stop_grace_period: 10s

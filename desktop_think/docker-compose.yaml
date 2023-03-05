@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  bitwarden:
+    depends_on:
+      - db
+    env_file:
+      - settings.env
+    image: ${REGISTRY:-bitwarden}/self-host:${TAG:-beta}
+    restart: always
+    ports:
+      - "25445:25445"
+      - "25446:25446"
+    volumes:
+      - /etc/bitwarden:/bitwarden
+      - /var/log/bitwarden:/logs
+
+  db:
+    environment:
+      MARIADB_USER: $MARIA_USER
+      MARIADB_PASSWORD: $MARIA_PASSWORD
+      MARIADB_DATABASE: $MARIA_DB
+      MARIADB_RANDOM_ROOT_PASSWORD: "true"
+    image: mariadb:10
+    restart: always
+    volumes:
+      - /var/lib/mysql:/data
+
+  factorio:
+    image: factoriotools/factorio
+    ports:
+     - "34197:34197/udp"
+     - "27015:27015/tcp"
+    restart: always
+    volumes:
+     - /opt/factorio:/factorio
+
+  starbound-server:
+    image: didstopia/starbound-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: starbound.env
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    ports:
+      - "21025:21025/tcp"
+    restart: always
+    volumes:
+      - /docker:/steamcmd/starbound:cached
+      - /docker:/app/.steam:cached
+
+#volumes:
+#  starbound-data:
+#  starbound-steam:
