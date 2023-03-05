@@ -48,7 +48,7 @@ services:
   terraria:
     image: beardedio/terraria:vanilla-latest
     ports:
-      - '7777:777'
+      - '7777:7777'
     restart: always
     environment:
       - world=first.wld
